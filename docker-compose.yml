@@ -4,6 +4,15 @@ services:
   app:
     build: .
     container_name: pp-simplificado-app
+    entrypoint: ./.docker/entrypoint.sh
+    environment:
+      - DB_HOST=db
+      - DB_TYPE=mysql
+      - DB_VENDOR=mysql
+      - DB_DATABASE=pp_simplificado
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
     volumes:
         - .:/var/www
     networks:

@@ -16,6 +16,8 @@ use Core\User\Domain\Repository\CompanyRepositoryInterface;
 use Core\User\Domain\Repository\PeopleRepositoryInterface;
 use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\User\Services\PasswordHasher;
+use Core\Wallet\Domain\Entities\Wallet;
+use Core\Wallet\Domain\Repository\WalletRepositoryInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Psr\Log\LoggerInterface;
 
@@ -26,7 +28,8 @@ class CreateUserUseCase
     const ERROR_CPF = 'CPF is already registered';
     const ERROR_CNPJ = 'CNPJ is already registered';
     const ERROR_PASSWORD = '"Password is required"';  
-    const MESSAGE_SUCCESS = 'Registered successfully!';     
+    const MESSAGE_SUCCESS = 'Registered successfully!';    
+    const MESSAGE_ERROR = 'An error occurred while registering. Please try again.'; 
 
     private Notification $notification;
 
@@ -36,6 +39,7 @@ class CreateUserUseCase
         private UserRepositoryInterface $userRepository,
         private PeopleRepositoryInterface $peopleRepository,
         private CompanyRepositoryInterface $companyRepository,
+        private WalletRepositoryInterface $walletRepository,
         private LoggerInterface $logger,
         private TransactionInterface $transaction
     ) {
@@ -63,6 +67,11 @@ class CreateUserUseCase
         return new Company($companyDTO->cnpj, $peopleId);
     }
 
+    private function createWallet(Uuid $userId)
+    {
+        return new Wallet(0.0,$userId);
+    }
+    
     /**
      * Valida se o email, cpf e cnpj já estão cadastrados.
      *
@@ -127,6 +136,9 @@ class CreateUserUseCase
                 $this->companyRepository->insert($company);
             }
 
+            $wallet = $this->createWallet($user->id);
+            $this->walletRepository->insert($wallet);
+
             $this->transaction->commit();
 
             return new OutputUserDTO(true, [self::MESSAGE_SUCCESS], $user, $people);
@@ -137,7 +149,7 @@ class CreateUserUseCase
             $this->notification->addError($e->getMessage());
             $this->logger->error("CreateUserUseCase " . date('Y-m-d H:i:s') . " User ID: " . $user->id() . " Error: " . $e->getMessage());
 
-            return new OutputUserDTO(false, $this->notification->getErrors(), null, null);
+            return new OutputUserDTO(false,[self::MESSAGE_ERROR], null, null);
         }
     }
 }

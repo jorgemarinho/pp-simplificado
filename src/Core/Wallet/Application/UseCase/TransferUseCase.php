@@ -14,7 +14,7 @@ use Core\Wallet\Application\DTO\OutputTransferWalletDTO;
 use Core\Wallet\Domain\Entities\Wallet;
 use Core\Wallet\Domain\Events\TransferEvent;
 use Core\Wallet\Domain\Repository\TransferHistoryRepositoryInterface;
-use Core\Wallet\Domain\Repository\TransferWalletRepositoryInterface;
+use Core\Wallet\Domain\Repository\WalletRepositoryInterface;
 use Core\Wallet\Interfaces\TransferEventManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -35,7 +35,7 @@ class TransferUseCase
     private Notification $notification;
 
     public function __construct(
-        private TransferWalletRepositoryInterface $TransferWalletRepositoryInterface,
+        private WalletRepositoryInterface $WalletRepositoryInterface,
         private TransferHistoryRepositoryInterface $transferHistoryUseCase,
         private UserRepositoryInterface $UserRepositoryInterface,
         private TransferEventManagerInterface $transferEventManagerInterface,
@@ -84,7 +84,7 @@ class TransferUseCase
      */
     private function getWallet(Uuid $userId): Wallet
     {
-        $wallet = $this->TransferWalletRepositoryInterface->findWalletByUserId($userId);
+        $wallet = $this->WalletRepositoryInterface->findWalletByUserId($userId);
 
         if (!$wallet) {
             $this->notification->addError(self::ERROR_WALLET_NOT_FOUND);
@@ -191,10 +191,10 @@ class TransferUseCase
         $payeeWallet->deposit($value);
 
         // Atualiza a carteira do pagador
-        $this->TransferWalletRepositoryInterface->update($payerWallet);
+        $this->WalletRepositoryInterface->update($payerWallet);
 
         // Atualiza a carteira do beneficiário
-        $this->TransferWalletRepositoryInterface->update($payeeWallet);
+        $this->WalletRepositoryInterface->update($payeeWallet);
     }
 
     /**

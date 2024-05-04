@@ -41,6 +41,6 @@ class Wallet extends Entity
     
     private function validate()
     {
-        DomainValidation::notNull($this->balance);
+        DomainValidation::validateNonNegative($this->balance);
     }
 }

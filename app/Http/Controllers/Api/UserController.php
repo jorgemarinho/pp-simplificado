@@ -12,6 +12,7 @@ use Core\User\Application\UseCase\CreateUserUseCase;
 
 class UserController extends Controller
 {
+    
     /**
      * Gravação de um novo usuário.
      *

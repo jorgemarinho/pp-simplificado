@@ -61,4 +61,11 @@ class DomainValidation
             throw new EntityValidationException($exceptMessage ?? 'The value not cnpj valid');
         }
     }
+
+    public static function validateNonNegative($value)
+    {
+        if ($value < 0) {
+            throw new EntityValidationException($exceptMessage ?? 'The value cannot be negative.');
+        }
+    }
 }

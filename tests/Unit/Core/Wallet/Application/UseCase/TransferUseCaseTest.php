@@ -10,7 +10,7 @@ use Core\Wallet\Application\DTO\InputTransferWalletDTO;
 use Core\Wallet\Application\UseCase\TransferUseCase;
 use Core\Wallet\Domain\Entities\Wallet;
 use Core\Wallet\Domain\Repository\TransferHistoryRepositoryInterface;
-use Core\Wallet\Domain\Repository\TransferWalletRepositoryInterface;
+use Core\Wallet\Domain\Repository\WalletRepositoryInterface;
 use Core\Wallet\Interfaces\TransferEventManagerInterface;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -28,7 +28,7 @@ it('can transfer amount from one wallet to another', function () {
     $sourceWallet = new Wallet($sourceWalletAmount, $payerUserId);
     $destinationWallet = new Wallet($destinationWalletAmount, $payeeUserId);
 
-    $TransferWalletRepositoryInterface = mock(TransferWalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
+    $WalletRepositoryInterface = mock(WalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
         $mock->shouldReceive('findWalletByUserId')->with($payerUserId)->once()->andReturn($sourceWallet);
         $mock->shouldReceive('findWalletByUserId')->with($payeeUserId)->once()->andReturn($destinationWallet);
         $mock->shouldReceive('update')->twice();
@@ -68,7 +68,7 @@ it('can transfer amount from one wallet to another', function () {
     });
 
     $transferUseCase = new TransferUseCase(
-        $TransferWalletRepositoryInterface,
+        $WalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
         $UserRepositoryInterface,
         $transferEventManagerInterface,
@@ -104,7 +104,7 @@ it('can not transfer amount when payer user for merchant', function () {
     $sourceWallet = new Wallet($sourceWalletAmount, $payerUserId);
     $destinationWallet = new Wallet($destinationWalletAmount, $payeeUserId);
 
-    $TransferWalletRepositoryInterface = mock(TransferWalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
+    $WalletRepositoryInterface = mock(WalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
         $mock->shouldReceive('findWalletByUserId')->with($payerUserId)->once()->andReturn($sourceWallet);
         $mock->shouldReceive('findWalletByUserId')->with($payeeUserId)->once()->andReturn($destinationWallet);
         $mock->shouldReceive('update')->never();
@@ -139,7 +139,7 @@ it('can not transfer amount when payer user for merchant', function () {
     });
 
     $transferUseCase = new TransferUseCase(
-        $TransferWalletRepositoryInterface,
+        $WalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
         $UserRepositoryInterface,
         $transferEventManagerInterface,
@@ -172,7 +172,7 @@ it('when the payer has no balance', function () {
     $sourceWallet = new Wallet($sourceWalletAmount, $payerUserId);
     $destinationWallet = new Wallet($destinationWalletAmount, $payeeUserId);
 
-    $TransferWalletRepositoryInterface = mock(TransferWalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
+    $WalletRepositoryInterface = mock(WalletRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId, $sourceWallet, $destinationWallet) {
         $mock->shouldReceive('findWalletByUserId')->with($payerUserId)->once()->andReturn($sourceWallet);
         $mock->shouldReceive('findWalletByUserId')->with($payeeUserId)->once()->andReturn($destinationWallet);
         $mock->shouldReceive('update')->never();
@@ -207,7 +207,7 @@ it('when the payer has no balance', function () {
     });
 
     $transferUseCase = new TransferUseCase(
-        $TransferWalletRepositoryInterface,
+        $WalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
         $UserRepositoryInterface,
         $transferEventManagerInterface,

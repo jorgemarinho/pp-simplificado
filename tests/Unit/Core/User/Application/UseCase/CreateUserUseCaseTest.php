@@ -13,6 +13,7 @@ use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\CompanyRepositoryInterface;
 use Core\User\Domain\Repository\PeopleRepositoryInterface;
 use Core\User\Domain\Repository\UserRepositoryInterface;
+use Core\Wallet\Domain\Repository\WalletRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Mockery\MockInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
@@ -34,6 +35,10 @@ it('can create a user client', function () {
         $mock->shouldReceive('findByCNPJ')->once();
     });
 
+    $walletRepository = mock(WalletRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->once();
+    });
+
     $logger = mock(LoggerInterface::class);
 
     $transaction = mock(TransactionInterface::class, function (MockInterface $mock) {
@@ -41,7 +46,7 @@ it('can create a user client', function () {
         $mock->shouldReceive('commit')->once();
     });
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository,$walletRepository, $logger, $transaction);
 
     $email = "jorgeluizbsi@gmail.com";
     $password = "98765432";
@@ -93,6 +98,10 @@ it('can create a user merchant', function () {
         $mock->shouldReceive('findByCNPJ')->never();
     });
 
+    $walletRepository = mock(WalletRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->once();
+    });
+
     $logger = mock(LoggerInterface::class);
 
     $transaction = mock(TransactionInterface::class, function (MockInterface $mock) {
@@ -100,7 +109,7 @@ it('can create a user merchant', function () {
         $mock->shouldReceive('commit')->once();
     });
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $walletRepository, $logger, $transaction);
 
     $email = "jorgeluizbsi@gmail.com";
     $password = "98765432";
@@ -143,6 +152,10 @@ it('can not create a user with invalid data', function () {
         $mock->shouldReceive('findByCNPJ')->never();
     });
 
+    $walletRepository = mock(WalletRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->never();
+    });
+
     $logger = mock(LoggerInterface::class);
 
     $transaction = mock(TransactionInterface::class, function (MockInterface $mock) {
@@ -150,7 +163,7 @@ it('can not create a user with invalid data', function () {
         $mock->shouldReceive('commit')->never();
     });
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $walletRepository, $logger, $transaction);
 
     $email = "";
     $password = "";
@@ -185,7 +198,7 @@ it('can not create a user with invalid data', function () {
     expect($outputUserDTO->getPeople())->toBeNull();
     expect($outputUserDTO->getUser())->toBeNull();
     
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository,$walletRepository,  $logger, $transaction);
 
     $email = "jorgeluizbsi@gmail.com";
     $password = "98765432";
@@ -214,7 +227,7 @@ it('can not create a user with invalid data', function () {
     
     expect($actualMessages)->toMatchArray($expectedMessages);
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository,$walletRepository, $logger, $transaction);
 
     $userDTO = new InputUserDTO($email, $password);
 
@@ -265,6 +278,10 @@ it('can create a user with existing email, cpf and cnpj', function () {
         $mock->shouldReceive('insert')->never();
         $mock->shouldReceive('findByCNPJ')->andReturn(new Company( cnpj: $cnpj, peopleId:  $peopleId ));
     });
+
+    $walletRepository = mock(WalletRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->never();
+    });
     
     $logger = mock(LoggerInterface::class);
 
@@ -273,7 +290,7 @@ it('can create a user with existing email, cpf and cnpj', function () {
         $mock->shouldReceive('commit')->never();
     });
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository,$walletRepository, $logger, $transaction);
 
     $userDTO = new InputUserDTO($email, $password);
     $peopleDTO = new InputPeopleDTO(
@@ -312,6 +329,10 @@ it('throws an exception when an error occurs', function () {
         $mock->shouldReceive('findByCNPJ')->once();
     });
 
+    $walletRepository = mock(WalletRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->never();
+    });
+    
     $logger = mock(LoggerInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('error')->once();
     });
@@ -322,7 +343,7 @@ it('throws an exception when an error occurs', function () {
         $mock->shouldReceive('rollBack')->once();
     });
 
-    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository,$walletRepository, $logger, $transaction);
 
     $email = "jorgeluizbsi@gmail.com";
     $password = "98765432";

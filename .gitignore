@@ -22,3 +22,4 @@ yarn-error.log
 .docker/dbdata
 .editorconfig
 .gitattributes
+.composer.lock

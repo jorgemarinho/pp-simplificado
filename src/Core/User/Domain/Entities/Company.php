@@ -23,6 +23,21 @@ class Company extends Entity
         $this->validate();
     }
 
+    public function getCnpj(): string
+    {
+        return $this->cnpj;
+    }
+    
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id(),
+            'cnpj' => $this->cnpj,
+            'people_id' => (string)$this->peopleId,
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+        ];
+    }
+
     private function validate()
     {
         DomainValidation::isCnpj($this->cnpj);

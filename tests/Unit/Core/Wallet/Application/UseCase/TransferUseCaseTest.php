@@ -5,7 +5,7 @@ use Core\SeedWork\Domain\Enum\UserType;
 use Core\SeedWork\Domain\Services\HttpServiceInterface;
 use Core\SeedWork\Domain\ValueObjects\Uuid;
 use Core\User\Domain\Entities\User;
-use Core\User\Domain\Repository\UserUseCaseRepositoryInterface;
+use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\Wallet\Application\DTO\InputTransferWalletDTO;
 use Core\Wallet\Application\UseCase\TransferUseCase;
 use Core\Wallet\Domain\Entities\Wallet;
@@ -38,7 +38,7 @@ it('can transfer amount from one wallet to another', function () {
         $mock->shouldReceive('insert')->once();
     });
 
-    $UserUseCaseRepositoryInterface = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
+    $UserRepositoryInterface = mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
         $mock->shouldReceive('findById')->with($payerUserId)->once()->andReturn(new User("jorgeluizbsi@gmail.com", '12345678' , 1 , $payerUserId));
         $mock->shouldReceive('findById')->with($payeeUserId)->once()->andReturn(new User( "pedro@gmail.com", null, 2 , $payeeUserId));
         $mock->shouldReceive('checkUserCredentials')->with("jorgeluizbsi@gmail.com", '12345678')->andReturn(true);
@@ -70,7 +70,7 @@ it('can transfer amount from one wallet to another', function () {
     $transferUseCase = new TransferUseCase(
         $TransferWalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
-        $UserUseCaseRepositoryInterface,
+        $UserRepositoryInterface,
         $transferEventManagerInterface,
         $httpService,
         $logger,
@@ -114,7 +114,7 @@ it('can not transfer amount when payer user for merchant', function () {
         $mock->shouldReceive('insert')->never();
     });
 
-    $UserUseCaseRepositoryInterface = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
+    $UserRepositoryInterface = mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
         $mock->shouldReceive('findById')->with($payerUserId)->once()->andReturn(new User("jorgeluizbsi@gmail.com", '12345678' , "2" , $payerUserId));
         $mock->shouldReceive('findById')->with($payeeUserId)->once()->andReturn(new User( "pedro@gmail.com", null,"2" , $payeeUserId));
         $mock->shouldReceive('checkUserCredentials')->with("jorgeluizbsi@gmail.com", '12345678')->andReturn(true);
@@ -141,7 +141,7 @@ it('can not transfer amount when payer user for merchant', function () {
     $transferUseCase = new TransferUseCase(
         $TransferWalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
-        $UserUseCaseRepositoryInterface,
+        $UserRepositoryInterface,
         $transferEventManagerInterface,
         $httpService,
         $logger,
@@ -182,7 +182,7 @@ it('when the payer has no balance', function () {
         $mock->shouldReceive('insert')->never();
     });
 
-    $UserUseCaseRepositoryInterface = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
+    $UserRepositoryInterface = mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($payerUserId, $payeeUserId) {
         $mock->shouldReceive('findById')->with($payerUserId)->once()->andReturn(new User("jorgeluizbsi@gmail.com", '12345678' , "1" , $payerUserId));
         $mock->shouldReceive('findById')->with($payeeUserId)->once()->andReturn(new User( "pedro@gmail.com", null,"2" , $payeeUserId));
         $mock->shouldReceive('checkUserCredentials')->with("jorgeluizbsi@gmail.com", '12345678')->andReturn(true);
@@ -209,7 +209,7 @@ it('when the payer has no balance', function () {
     $transferUseCase = new TransferUseCase(
         $TransferWalletRepositoryInterface,
         $TransferHistoryRepositoryInterface,
-        $UserUseCaseRepositoryInterface,
+        $UserRepositoryInterface,
         $transferEventManagerInterface,
         $httpService,
         $logger,

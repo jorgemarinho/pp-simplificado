@@ -7,7 +7,7 @@ use Core\SeedWork\Domain\Notification\Notification;
 class InputCompanyDTO
 {
     public function __construct(
-        public string $cnpj)
+        public string|null $cnpj)
     {
     }
 

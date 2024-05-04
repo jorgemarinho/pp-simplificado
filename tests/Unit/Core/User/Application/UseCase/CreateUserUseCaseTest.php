@@ -12,13 +12,14 @@ use Core\User\Domain\Entities\People;
 use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\CompanyRepositoryInterface;
 use Core\User\Domain\Repository\PeopleRepositoryInterface;
-use Core\User\Domain\Repository\UserUseCaseRepositoryInterface;
+use Core\User\Domain\Repository\UserRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Mockery\MockInterface;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
-it('can create a user', function () {
+it('can create a user client', function () {
     
-    $userRepository = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) {
+    $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('insert')->once();
         $mock->shouldReceive('findByEmail')->once();
     });
@@ -59,6 +60,63 @@ it('can create a user', function () {
     $outputUserDTO = $useCase->execute($userDTO, $peopleDTO, $companyDTO);
 
     $this->assertInstanceOf(OutputUserDTO::class, $outputUserDTO);
+
+    expect($outputUserDTO->isSuccess())->toBe(true);
+    expect($outputUserDTO->getMessage())->toBe([CreateUserUseCase::MESSAGE_SUCCESS]);
+    expect($outputUserDTO->getUser())->toBeInstanceOf(User::class);
+    expect($outputUserDTO->getPeople())->toBeInstanceOf(People::class);
+    expect($outputUserDTO->getUser()->id())->not->toBeNull();
+    expect($outputUserDTO->getPeople()->id())->not->toBeNull();
+    expect($outputUserDTO->getUser()->getEmail())->toBe($email);
+    expect($outputUserDTO->getPeople()->getCpf())->toBe($peopleDTO->cpf);
+    expect($outputUserDTO->getPeople()->getPhone())->toBe($peopleDTO->phone);
+    expect($outputUserDTO->getPeople()->getFullName())->toBe($peopleDTO->fullName);
+    expect($outputUserDTO->getPeople()->getUserId())->toBe($outputUserDTO->getUser()->id());
+
+    
+});
+
+it('can create a user merchant', function () {
+    
+    $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->once();
+        $mock->shouldReceive('findByEmail')->once();
+    });
+
+    $peopleRepository = mock(PeopleRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->once();
+        $mock->shouldReceive('findByCPF')->once();
+    });
+
+    $companyRepository = mock(CompanyRepositoryInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('insert')->never();
+        $mock->shouldReceive('findByCNPJ')->never();
+    });
+
+    $logger = mock(LoggerInterface::class);
+
+    $transaction = mock(TransactionInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('begin')->once();
+        $mock->shouldReceive('commit')->once();
+    });
+
+    $useCase = new CreateUserUseCase($userRepository, $peopleRepository, $companyRepository, $logger, $transaction);
+
+    $email = "jorgeluizbsi@gmail.com";
+    $password = "98765432";
+    $userDTO = new InputUserDTO($email, $password);
+
+    $peopleDTO = new InputPeopleDTO(
+        fullName: "Jorge Luiz",
+        cpf: "82477613006",
+        phone: "61981665606"
+    );
+
+    $companyDTO = null;
+    
+    $outputUserDTO = $useCase->execute($userDTO, $peopleDTO, $companyDTO);
+
+    $this->assertInstanceOf(OutputUserDTO::class, $outputUserDTO);
     
     expect($outputUserDTO->isSuccess())->toBe(true);
     expect($outputUserDTO->getMessage())->toBe([CreateUserUseCase::MESSAGE_SUCCESS]);
@@ -67,9 +125,10 @@ it('can create a user', function () {
     
 });
 
+
 it('can not create a user with invalid data', function () {
     
-    $userRepository = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) {
+    $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('insert')->never();
         $mock->shouldReceive('findByEmail')->never();
     });
@@ -192,7 +251,7 @@ it('can create a user with existing email, cpf and cnpj', function () {
     $userId =  Uuid::random();
     $peopleId = Uuid::random();
 
-    $userRepository = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) use ($email, $password) {
+    $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) use ($email, $password) {
         $mock->shouldReceive('insert')->never();
         $mock->shouldReceive('findByEmail')->andReturn(new User( email: $email, password: $password));
     });
@@ -238,7 +297,7 @@ it('can create a user with existing email, cpf and cnpj', function () {
 
 it('throws an exception when an error occurs', function () {
 
-    $userRepository = mock(UserUseCaseRepositoryInterface::class, function (MockInterface $mock) {
+    $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('insert')->once()->andThrow(new \Exception());
         $mock->shouldReceive('findByEmail')->once();
     });

@@ -23,7 +23,7 @@ class People extends Entity
 
         $this->validate();
     }
-      
+
     public function getFullName(): string
     {
         return $this->fullName;
@@ -33,10 +33,27 @@ class People extends Entity
     {
         return $this->cpf;
     }
-    
+
     public function getPhone(): string
     {
         return $this->phone;
+    }
+
+    public function getUserId(): string
+    {
+        return (string)$this->userId;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => (string) $this->id,
+            'full_name' => $this->fullName,
+            'cpf' => $this->cpf,
+            'phone' => $this->phone,
+            'user_id' => (string) $this->userId,
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+        ];
     }
 
     private function validate()

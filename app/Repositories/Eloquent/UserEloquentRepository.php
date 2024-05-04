@@ -5,19 +5,26 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\User as Model;
 use Core\User\Domain\Entities\User;
-use Core\User\Domain\Repository\UserUseCaseRepositoryInterface;
+use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\SeedWork\Domain\ValueObjects\Uuid as ValueObjectUuid;
 use Core\SeedWork\Domain\Exception\NotFoundException;
-class UserUseCaseRepository implements UserUseCaseRepositoryInterface
+use Core\User\Services\PasswordHasher;
+
+
+class UserEloquentRepository implements UserRepositoryInterface
 {
+
+    private PasswordHasher $passwordHasher;
 
     public function __construct(private Model $model)
     {
+        $this->passwordHasher = new PasswordHasher();
     }
 
     public function insert(User $user): User
     {
         $dataDB = $this->model->create([
+            'id' => $user->id(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),
             'user_type_id' => $user->getType(),
@@ -46,7 +53,7 @@ class UserUseCaseRepository implements UserUseCaseRepositoryInterface
 
     public function checkUserCredentials(string $email, string $password): bool
     {
-        return $this->model->where('email', $email)->where('password', $password)->exists();
+        return $this->model->where('email', $email)->where('password', $this->passwordHasher->hashPassword($password))->exists();
     }
 
     private function convertToEntity(Model $model): User

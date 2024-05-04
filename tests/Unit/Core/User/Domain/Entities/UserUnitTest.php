@@ -12,6 +12,12 @@ it('can create a user entity', function () {
     expect($user)->toBeInstanceOf(User::class);
     expect($user->email)->toBe($email);
     expect($user->password)->toBe($password);
+    
+    $userArray = $user->toArray();
+    expect($userArray)->toBeArray();
+    expect($userArray)->toHaveKey('email');
+    expect($userArray['email'])->toBe($email);
+    
 });
 
 

@@ -6,15 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Wallet extends Model
 {
+    public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'balance',
         'user_id',
     ];
 
     protected $casts = [
-        'id' => 'uuid',
-        'user_id' => 'uuid',
+        'id' => 'string',
+        'user_id' => 'string',
     ];
 
     public function user()

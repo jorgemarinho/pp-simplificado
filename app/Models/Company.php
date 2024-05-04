@@ -6,14 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    protected $table = 'company';
+    protected $table = 'companies';
     protected $primaryKey = 'id';
+
     public $incrementing = false;
-    protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'cnpj',
         'people_id',
+    ];
+    
+    protected $casts = [
+        'id' => 'string',
+        'user_id' => 'string',
     ];
     
     public function people()

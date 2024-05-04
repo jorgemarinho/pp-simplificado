@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class People extends Model
 {
 
+    public $incrementing = false;
+
     protected $fillable = [
+        'id',
         'full_name',
         'cpf',
         'phone',
@@ -15,8 +18,8 @@ class People extends Model
     ];
 
     protected $casts = [
-        'id' => 'uuid',
-        'user_id' => 'uuid',
+        'id' => 'string',
+        'user_id' => 'string',
     ];
 
     public function user()

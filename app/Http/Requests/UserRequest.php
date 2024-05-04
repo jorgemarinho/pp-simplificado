@@ -2,24 +2,30 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Elegant\Sanitizer\Laravel\SanitizesInput;
 
 class UserRequest extends FormRequest
 {
+    use SanitizesInput;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     public function filters()
     {
         return [
-            'company.cnpj'  =>  'digit',
-            'people.cpf'  =>  'digit',
-            'people.phone' => 'digit',
+            'cnpj'  =>  'digit',
+            'cpf'  =>  'digit',
+            'phone' => 'digit',
+            'user_type_id' => 'digit',
         ];
     }
 
@@ -42,35 +48,17 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user.user_type_id' => [
-                'required',
-            ],
-            'user.email' => [
-                'required',
-                'email:rfc,dns',
-                'unique:users,email'
-            ],
-            'user.password' => [
-                'required',
-                'min:6'
-            ],
-            'people.full_name' => [
-                'required',
-                'min:6'
-            ],
-            'people.cpf' => [
-                'required',
-                'min:11',
-                'cpf|unique:people,cpf'
-            ],
-            'people.phone' => [
-                'required',
-                'min:11'
-            ],
-            'company.cnpj' => [
-                'min:14',
-                'sometimes|cnpj|unique:companies,cnpj'
-            ],
+            'email' => 'required|email:rfc,dns|unique:users,email',
+            'password' => 'required|min:8',
+            'full_name' => 'required|min:6',
+            'cpf' => 'required|min:11|cpf|unique:people,cpf',
+            'phone' => 'required|min:10',
+            'cnpj' => 'min:14|sometimes|cnpj|unique:companies,cnpj',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

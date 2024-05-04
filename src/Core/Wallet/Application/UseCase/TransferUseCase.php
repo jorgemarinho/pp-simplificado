@@ -8,7 +8,7 @@ use Core\SeedWork\Domain\Notification\Notification;
 use Core\SeedWork\Domain\Services\HttpServiceInterface;
 use Core\SeedWork\Domain\ValueObjects\Uuid;
 use Core\User\Domain\Entities\User;
-use Core\User\Domain\Repository\UserUseCaseRepositoryInterface;
+use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\Wallet\Application\DTO\InputTransferWalletDTO;
 use Core\Wallet\Application\DTO\OutputTransferWalletDTO;
 use Core\Wallet\Domain\Entities\Wallet;
@@ -37,7 +37,7 @@ class TransferUseCase
     public function __construct(
         private TransferWalletRepositoryInterface $TransferWalletRepositoryInterface,
         private TransferHistoryRepositoryInterface $transferHistoryUseCase,
-        private UserUseCaseRepositoryInterface $UserUseCaseRepositoryInterface,
+        private UserRepositoryInterface $UserRepositoryInterface,
         private TransferEventManagerInterface $transferEventManagerInterface,
         private HttpServiceInterface $httpService,
         private LoggerInterface $logger,
@@ -54,7 +54,7 @@ class TransferUseCase
      */
     private function getUser(Uuid $userId): User
     {
-        $user = $this->UserUseCaseRepositoryInterface->findById($userId);
+        $user = $this->UserRepositoryInterface->findById($userId);
 
         if (!$user) {
             $this->notification->addError(self::ERROR_USER_NOT_FOUND);
@@ -171,7 +171,7 @@ class TransferUseCase
      */
     private function validatePassword(User $user, string $password): void
     {
-        if (!$this->UserUseCaseRepositoryInterface->checkUserCredentials($user->getEmail(), $password)) {
+        if (!$this->UserRepositoryInterface->checkUserCredentials($user->getEmail(), $password)) {
             $this->notification->addError(self::ERROR_INVALID_CREDENTIALS);
         }
     }

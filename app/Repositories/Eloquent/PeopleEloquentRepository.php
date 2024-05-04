@@ -17,7 +17,8 @@ class PeopleEloquentRepository implements PeopleRepositoryInterface
     public function insert(People $people): People
     {
         $dataDB = $this->model->create([
-            'fullName' => $people->getFullName(),
+            'id' => $people->id(),
+            'full_name' => $people->getFullName(),
             'cpf' => $people->getCpf(),
             'phone' => $people->getPhone(),
             'user_id' => $people->userId,
@@ -41,7 +42,7 @@ class PeopleEloquentRepository implements PeopleRepositoryInterface
             fullName: $model->full_name,
             cpf: $model->cpf,
             phone: $model->phone,
-            userId: $model->user_id,
+            userId: new ValueObjectUuid($model->user_id),
             id: new ValueObjectUuid($model->id),
         );
     }

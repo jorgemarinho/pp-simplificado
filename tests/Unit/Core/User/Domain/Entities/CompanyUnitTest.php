@@ -39,6 +39,15 @@ it('can create a company with id and createdAt', function () {
     expect($company->peopleId)->toBe($peopleId);
     expect($company->id)->toBe($id);
     expect($company->createdAt)->toBe($createdAt);
+
+
+    expect($company->toArray())->toBe([
+        'id' => (string)$id,
+        'cnpj' => $cnpj,
+        'people_id' => (string)$peopleId,
+        'created_at' => $company->createdAt()
+    ]);
+    
 });
 
 it('should throw exception when cnpj is invalid', function () {
@@ -49,4 +58,3 @@ it('should throw exception when cnpj is invalid', function () {
     new Company($cnpj,$peopleId);
 
 })->throws(Exception::class);
-

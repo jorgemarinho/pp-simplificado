@@ -14,7 +14,9 @@ use Core\User\Domain\Entities\People;
 use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\CompanyRepositoryInterface;
 use Core\User\Domain\Repository\PeopleRepositoryInterface;
-use Core\User\Domain\Repository\UserUseCaseRepositoryInterface;
+use Core\User\Domain\Repository\UserRepositoryInterface;
+use Core\User\Services\PasswordHasher;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Psr\Log\LoggerInterface;
 
 class CreateUserUseCase
@@ -28,21 +30,26 @@ class CreateUserUseCase
 
     private Notification $notification;
 
+    private PasswordHasher $passwordHasher;
+
     public function __construct(
-        private UserUseCaseRepositoryInterface $userRepository,
+        private UserRepositoryInterface $userRepository,
         private PeopleRepositoryInterface $peopleRepository,
         private CompanyRepositoryInterface $companyRepository,
         private LoggerInterface $logger,
         private TransactionInterface $transaction
     ) {
         $this->notification = new Notification();
+        $this->passwordHasher = new PasswordHasher();
     }
 
     private function createUser($userDTO)
     {
+        $hashedPassword = $this->passwordHasher->hashPassword($userDTO->password);
+
         return new User(
             $userDTO->email,
-            $userDTO->password
+            $hashedPassword
         );
     }
 
@@ -64,7 +71,7 @@ class CreateUserUseCase
      * @param InputCompanyDTO $companyDTO
      * @return void
      */
-    public function validate(InputUserDTO $userDTO, InputPeopleDTO $peopleDTO, InputCompanyDTO $companyDTO): void
+    public function validate(InputUserDTO $userDTO, InputPeopleDTO $peopleDTO, InputCompanyDTO|null $companyDTO): void
     {
          //verifica se o email, cpf e cnpj já estão cadastrados
         if ($this->userRepository->findByEmail($userDTO->email) !== null) {
@@ -77,7 +84,7 @@ class CreateUserUseCase
         }
 
         //verifica se o cnpj já está cadastrado
-        if ($companyDTO->cnpj && $this->companyRepository->findByCNPJ($companyDTO->cnpj) !== null) {
+        if ( !is_null($companyDTO) && $companyDTO->cnpj && $this->companyRepository->findByCNPJ($companyDTO->cnpj) !== null) {
             $this->notification->addError(self::ERROR_CNPJ);
         }
 
@@ -91,10 +98,10 @@ class CreateUserUseCase
      * @param InputCompanyDTO $companyDTO O objeto de entrada de dados para a empresa.
      * @return OutputUserDTO O objeto de saída de dados para o usuário.
      */
-    public function execute(InputUserDTO $userDTO, InputPeopleDTO $peopleDTO, InputCompanyDTO $companyDTO): OutputUserDTO
+    public function execute(InputUserDTO $userDTO, InputPeopleDTO $peopleDTO, InputCompanyDTO|null $companyDTO = null): OutputUserDTO
     {
         //verifica se os dados de entrada são válidos
-        if (!$userDTO->isValid($this->notification) || !$peopleDTO->isValid($this->notification) || !$companyDTO->isValid($this->notification)) {
+        if (!$userDTO->isValid($this->notification) || !$peopleDTO->isValid($this->notification) || !is_null($companyDTO) && !$companyDTO->isValid($this->notification)) {
             return new OutputUserDTO(false, $this->notification->getErrors(), null, null);
         }
 
@@ -111,11 +118,11 @@ class CreateUserUseCase
 
             $user = $this->createUser($userDTO);
             $this->userRepository->insert($user);
-
+      
             $people = $this->createPeople($peopleDTO, $user->id);
             $this->peopleRepository->insert($people);
 
-            if ($companyDTO->cnpj != null) {
+            if (!is_null($companyDTO) && $companyDTO->cnpj != null) {
                 $company = $this->createCompany($companyDTO, $people->id);
                 $this->companyRepository->insert($company);
             }

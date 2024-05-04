@@ -23,5 +23,14 @@ it('can create a people', function () {
     expect($people->userId)->toBe($userId);
     expect($people->phone)->toBe($phone);
 
+    expect($people->toArray())->toBe([
+        'id' => $people->id(),
+        'full_name' => $fullName,
+        'cpf' => $cpf,
+        'phone' => $phone,
+        'user_id' => (string)$userId,
+        'created_at' => $people->createdAt()
+    ]);
+
 });
 

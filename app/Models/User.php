@@ -11,12 +11,15 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'email',
         'password',
         'user_type_id'
@@ -39,6 +42,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'id' => 'string',
             'password' => 'hashed',
         ];
     }

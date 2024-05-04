@@ -43,7 +43,17 @@ class User extends Entity
     {
         return $this->people;
     }
-    
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id(),
+            'email' => $this->email,
+            'user_type' => $this->userType,
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'people' => $this->people ? $this->people->toArray() : null,
+        ];
+    }
+
     private function validate()
     {
         DomainValidation::notNull($this->email);

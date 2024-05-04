@@ -5,7 +5,7 @@ namespace Core\User\Domain\Repository;
 use Core\SeedWork\Domain\ValueObjects\Uuid;
 use Core\User\Domain\Entities\User;
 
-interface UserUseCaseRepositoryInterface
+interface UserRepositoryInterface
 {
     public function insert(User $user): User;
 

@@ -4,7 +4,7 @@ namespace Core\SeedWork\Domain\Services;
 
 class HttpService implements HttpServiceInterface
 {
-    public function get(string $url): string
+    public function get(string $url, array $headers = []): array
     {
         $response = file_get_contents($url);
 
@@ -12,6 +12,12 @@ class HttpService implements HttpServiceInterface
             throw new \Exception('Failed to fetch URL: ' . $url);
         }
 
-        return $response;
+        $decodedResponse = json_decode($response, true);
+
+        if ($decodedResponse === null) {
+            throw new \Exception('Failed to decode response from URL: ' . $url);
+        }
+
+        return $decodedResponse;
     }
 }

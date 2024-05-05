@@ -11,5 +11,5 @@ it('can get a response from a url', function () {
 
     $response = $httpService->get($url);
 
-    expect($response)->toBeString();
+    expect($response)->toBeArray();
 });

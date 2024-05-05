@@ -50,10 +50,10 @@ it('can transfer amount from one wallet to another', function () {
 
     $httpService = mock(HttpServiceInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('get')->once()->andReturn(
-            json_encode(["message" => "Autorizado"])
+            ["message" => "Autorizado"]
         );
         $mock->shouldReceive('get')->once()->andReturn(
-            json_encode(["message" => true])
+           ["message" => true]
         );
     });
 

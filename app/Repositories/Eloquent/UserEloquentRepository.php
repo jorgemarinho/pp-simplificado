@@ -8,6 +8,7 @@ use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\SeedWork\Domain\ValueObjects\Uuid as ValueObjectUuid;
 use Core\SeedWork\Domain\Exception\NotFoundException;
+use Core\User\Domain\Entities\People;
 use Core\User\Services\PasswordHasher;
 
 
@@ -63,7 +64,20 @@ class UserEloquentRepository implements UserRepositoryInterface
             email: $model->email,
             password: $model->password,
             userType: $model->user_type_id,
-            createdAt: $model->created_at
+            createdAt: $model->created_at,
+            people: $this->convertToPeople($model)
+        );
+    }
+
+    private function convertToPeople(Model $model): People 
+    {
+        return new People(
+            fullName: $model->people->full_name,
+            cpf: $model->people->cpf,
+            phone: $model->people->phone,
+            userId: new ValueObjectUuid($model->id),
+            id: new ValueObjectUuid($model->people->id),
+            createdAt: $model->people->created_at
         );
     }
 }

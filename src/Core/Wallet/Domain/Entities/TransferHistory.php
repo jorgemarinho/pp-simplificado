@@ -22,6 +22,21 @@ class TransferHistory extends Entity
         $this->validate();
     }
 
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
+
+    public function getPayeeUserId(): Uuid
+    {
+        return $this->payeeUserId;
+    }
+
+    public function getPayerUserId(): Uuid
+    {
+        return $this->payerUserId;
+    }
+
     private function validate()
     {
         DomainValidation::notNull($this->amount);

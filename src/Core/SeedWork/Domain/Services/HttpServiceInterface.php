@@ -4,5 +4,5 @@ namespace Core\SeedWork\Domain\Services;
 
 interface HttpServiceInterface
 {
-    public function get(string $url): string;
+    public function get(string $url, array $headers = []): array;
 }

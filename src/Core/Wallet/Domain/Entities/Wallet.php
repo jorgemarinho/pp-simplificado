@@ -29,6 +29,11 @@ class Wallet extends Entity
         return $this->balance;
     }
 
+    public function getUserId(): Uuid|string
+    {
+        return (string)$this->userId;
+    }
+
     public function deposit(float $value)
     {
         $this->balance += $value;
@@ -39,6 +44,17 @@ class Wallet extends Entity
         $this->balance -= $value;
     }
     
+    public function toArray(): array
+    {
+        return [
+            'id' => (string) $this->id,
+            'balance' => $this->balance,
+            'user_id' => (string) $this->userId,
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'update_at' => $this->updateAt?->format('Y-m-d H:i:s'),
+        ];
+    }
+
     private function validate()
     {
         DomainValidation::validateNonNegative($this->balance);

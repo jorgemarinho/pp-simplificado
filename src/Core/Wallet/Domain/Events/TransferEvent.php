@@ -25,12 +25,14 @@ class TransferEvent implements EventInterface
             'payer_user' => [
                 'value' =>  $this->value,
                 'email' => $this->payerUser->getEmail(),
-                'phone' => $this->payerUser?->getPeople()?->getPhone()
+                'phone' => $this->payerUser?->getPeople()?->getPhone(),
+                'name' => $this->payerUser?->getPeople()?->getFullName()
             ],
             'payee_user' => [
                 'value' =>  $this->value,
                 'email' => $this->payeeUser->getEmail(),
-                'phone' => $this->payeeUser?->getPeople()?->getPhone()
+                'phone' => $this->payeeUser?->getPeople()?->getPhone(),
+                'name' => $this->payeeUser?->getPeople()?->getFullName()
             ]
         ];
     }

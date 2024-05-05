@@ -11,6 +11,7 @@ use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\Wallet\Application\DTO\InputTransferWalletDTO;
 use Core\Wallet\Application\DTO\OutputTransferWalletDTO;
+use Core\Wallet\Domain\Entities\TransferHistory;
 use Core\Wallet\Domain\Entities\Wallet;
 use Core\Wallet\Domain\Events\TransferEvent;
 use Core\Wallet\Domain\Repository\TransferHistoryRepositoryInterface;
@@ -35,7 +36,7 @@ class TransferUseCase
     private Notification $notification;
 
     public function __construct(
-        private WalletRepositoryInterface $WalletRepositoryInterface,
+        private WalletRepositoryInterface $walletRepositoryInterface,
         private TransferHistoryRepositoryInterface $transferHistoryUseCase,
         private UserRepositoryInterface $UserRepositoryInterface,
         private TransferEventManagerInterface $transferEventManagerInterface,
@@ -84,7 +85,7 @@ class TransferUseCase
      */
     private function getWallet(Uuid $userId): Wallet
     {
-        $wallet = $this->WalletRepositoryInterface->findWalletByUserId($userId);
+        $wallet = $this->walletRepositoryInterface->findWalletByUserId($userId);
 
         if (!$wallet) {
             $this->notification->addError(self::ERROR_WALLET_NOT_FOUND);
@@ -117,10 +118,9 @@ class TransferUseCase
     private function validateAuthorizeTransfer(): void
     {
         try {
-            $response = $this->httpService->get(self::EXTERNAL_SERVICE_AUTHORIZE_TRANSFER_URL);
-            $data = json_decode($response);
-
-            if (!isset($data->message) || $data->message !== 'Autorizado') {
+            $data = $this->httpService->get(self::EXTERNAL_SERVICE_AUTHORIZE_TRANSFER_URL);
+    
+            if (!isset($data['message']) || $data['message'] !== 'Autorizado') {
                 $this->notification->addError(self::ERROR_UNAUTHORIZED_TRANSFER);
             }
         } catch (\Exception $e) {
@@ -137,10 +137,9 @@ class TransferUseCase
     private function checkNotificationService(): bool
     {
         try {
-            $response = $this->httpService->get(self::EXTERNAL_SERVICE_SEND_TRANSFER_EVENT_URL);
-            $data = json_decode($response);
+            $data = $this->httpService->get(self::EXTERNAL_SERVICE_SEND_TRANSFER_EVENT_URL);
 
-            if ($data->message) {
+            if ($data['message']) {
                 return true;
             }
         } catch (\Exception $e) {
@@ -191,10 +190,10 @@ class TransferUseCase
         $payeeWallet->deposit($value);
 
         // Atualiza a carteira do pagador
-        $this->WalletRepositoryInterface->update($payerWallet);
+        $this->walletRepositoryInterface->update($payerWallet);
 
         // Atualiza a carteira do beneficiário
-        $this->WalletRepositoryInterface->update($payeeWallet);
+        $this->walletRepositoryInterface->update($payeeWallet);
     }
 
     /**
@@ -235,9 +234,6 @@ class TransferUseCase
             $payerWallet = $this->getWallet($inputTransferWalletDTO->payerUserId);
             $payeeWallet = $this->getWallet($inputTransferWalletDTO->payeeUserId);
 
-            //verifica se senha do pagador é válida
-            $this->validatePassword($payerUser, $inputTransferWalletDTO->passwordPayerUserId);
-
             //verifica se o pagador é lojista e se tem saldo suficiente
             $this->validatePayer($payerUser, $payerWallet, $inputTransferWalletDTO->value);
 
@@ -252,19 +248,21 @@ class TransferUseCase
             $this->updateWallets($payerWallet, $payeeWallet, $inputTransferWalletDTO->value);
 
             //gravar histórico de transferência
-            $this->transferHistoryUseCase->insert($inputTransferWalletDTO->payerUserId, $inputTransferWalletDTO->payeeUserId, $inputTransferWalletDTO->value);
+            $this->transferHistoryUseCase->insert(
+                new TransferHistory($inputTransferWalletDTO->value, $inputTransferWalletDTO->payerUserId, $inputTransferWalletDTO->payeeUserId)
+            );
 
             $this->transaction->commit();
 
             //dispara evento de transferência para enviar e-mail, sms, etc
             $this->sendTransferEvent(new TransferEvent($payerUser, $payeeUser, $inputTransferWalletDTO->value));
 
-            return new OutputTransferWalletDTO(true, [self::MESSAGE_SUCCESS]);
+            return new OutputTransferWalletDTO(true, [self::MESSAGE_SUCCESS], $inputTransferWalletDTO->value);
         } catch (\Exception $e) {
 
             $this->transaction->rollback();
             $this->notification->addError($e->getMessage());
-            $this->logger->error("TransferUSeCase " . date('Y-m-d H:i:s') . " payerUser ID: " . $payerUser->id() . " to payeeUser ID: " . $payeeUser->id() . " Valor " . $inputTransferWalletDTO->value . " Error: " . $e->getMessage());
+            $this->logger->error("TransferUSeCase " . date('Y-m-d H:i:s')  . " Valor " . $inputTransferWalletDTO->value . " Error: " . $e->getMessage());
 
             return new OutputTransferWalletDTO(false, $this->notification->getErrors());
         }

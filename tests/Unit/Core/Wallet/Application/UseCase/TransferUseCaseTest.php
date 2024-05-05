@@ -80,8 +80,7 @@ it('can transfer amount from one wallet to another', function () {
     $outputTransferWalletDTO = $transferUseCase->execute(new InputTransferWalletDTO(
         payerUserId: $payerUserId,
         payeeUserId: $payeeUserId,
-        value: $amount,
-        passwordPayerUserId: $passwordPayerUserId
+        value: $amount
     ));
 
     expect($outputTransferWalletDTO->isSuccess())->toBe(true);
@@ -151,8 +150,7 @@ it('can not transfer amount when payer user for merchant', function () {
     $outputTransferWalletDTO = $transferUseCase->execute(new InputTransferWalletDTO(
         payerUserId: $payerUserId,
         payeeUserId: $payeeUserId,
-        value: $amount,
-        passwordPayerUserId: $passwordPayerUserId
+        value: $amount
     ));
 
     expect($outputTransferWalletDTO->isSuccess())->toBe(false);
@@ -219,8 +217,7 @@ it('when the payer has no balance', function () {
     $outputTransferWalletDTO = $transferUseCase->execute(new InputTransferWalletDTO(
         payerUserId: $payerUserId,
         payeeUserId: $payeeUserId,
-        value: $amount,
-        passwordPayerUserId: $passwordPayerUserId
+        value: $amount
     ));
 
     expect($outputTransferWalletDTO->isSuccess())->toBe(false);

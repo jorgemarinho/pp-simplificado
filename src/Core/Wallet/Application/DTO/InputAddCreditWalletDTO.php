@@ -8,7 +8,7 @@ class InputAddCreditWalletDTO
 {
     public function __construct(
         private float $amount,
-        private string $cpf
+        public Uuid $userId,
     ) {}
 
     public function getAmount(): float
@@ -16,8 +16,9 @@ class InputAddCreditWalletDTO
         return $this->amount;
     }
 
-    public function getCpf(): string
+    public function getUserId(): Uuid
     {
-        return $this->cpf;
+        return $this->userId;
     }
+
 }

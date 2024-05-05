@@ -46,4 +46,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+    
+    public function people()
+    {
+        return $this->hasOne(People::class, 'user_id');
+    }
+    
 }

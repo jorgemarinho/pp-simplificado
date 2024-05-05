@@ -29,7 +29,7 @@ class AddCreditUseCase
     {
         try {
 
-            $wallet = $this->walletRepository->findWalletByCpf($inputAddCreditWalletDTO->getCpf());
+            $wallet = $this->walletRepository->findWalletByUserId($inputAddCreditWalletDTO->getUserId());
 
             if (!$wallet) {
                 $this->notification->addError(self::ERROR_WALLET_NOT_FOUND);

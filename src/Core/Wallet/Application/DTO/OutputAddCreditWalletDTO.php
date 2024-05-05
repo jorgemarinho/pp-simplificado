@@ -2,8 +2,6 @@
 
 namespace Core\Wallet\Application\DTO;
 
-use Core\SeedWork\Domain\ValueObjects\Uuid;
-
 class OutputAddCreditWalletDTO
 {
 

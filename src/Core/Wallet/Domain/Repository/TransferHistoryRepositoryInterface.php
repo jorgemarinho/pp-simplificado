@@ -2,9 +2,9 @@
 
 namespace Core\Wallet\Domain\Repository;
 
-use Core\SeedWork\Domain\ValueObjects\Uuid;
+use Core\Wallet\Domain\Entities\TransferHistory;
 
 interface TransferHistoryRepositoryInterface
 {
-    public function insert(Uuid $payerUserId,Uuid $payeeUserId, $amount): bool;
+    public function insert(TransferHistory $transferHistory): TransferHistory;
 }

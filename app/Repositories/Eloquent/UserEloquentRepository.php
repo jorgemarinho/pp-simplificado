@@ -4,10 +4,12 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\User as Model;
+use App\Repositories\Presenters\PaginationPresenter;
 use Core\User\Domain\Entities\User;
 use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\SeedWork\Domain\ValueObjects\Uuid as ValueObjectUuid;
 use Core\SeedWork\Domain\Exception\NotFoundException;
+use Core\SeedWork\Domain\Repository\PaginationInterface;
 use Core\User\Domain\Entities\People;
 use Core\User\Services\PasswordHasher;
 
@@ -57,6 +59,20 @@ class UserEloquentRepository implements UserRepositoryInterface
         return $this->model->where('email', $email)->where('password', $this->passwordHasher->hashPassword($password))->exists();
     }
 
+    public function paginate(string $filter = '', $order = 'DESC', int $page = 1, int $totalPage = 15): PaginationInterface
+    {
+        $query = $this->model->join('people', 'users.id', '=', 'people.user_id');
+
+        if ($filter) {
+            $query = $query->where('users.email', 'LIKE', "%{$filter}%");
+        }
+
+        $query = $query->orderBy('users.id', $order);
+        $paginator = $query->paginate();
+
+        return new PaginationPresenter($paginator);
+    }
+    
     private function convertToEntity(Model $model): User
     {
         return new User(

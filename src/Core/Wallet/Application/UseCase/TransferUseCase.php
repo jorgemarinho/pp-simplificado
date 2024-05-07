@@ -38,7 +38,7 @@ class TransferUseCase
     public function __construct(
         private WalletRepositoryInterface $walletRepositoryInterface,
         private TransferHistoryRepositoryInterface $transferHistoryUseCase,
-        private UserRepositoryInterface $UserRepositoryInterface,
+        private UserRepositoryInterface $userRepositoryInterface,
         private TransferEventManagerInterface $transferEventManagerInterface,
         private HttpServiceInterface $httpService,
         private LoggerInterface $logger,
@@ -55,7 +55,7 @@ class TransferUseCase
      */
     private function getUser(Uuid $userId): User
     {
-        $user = $this->UserRepositoryInterface->findById($userId);
+        $user = $this->userRepositoryInterface->findById($userId);
 
         if (!$user) {
             $this->notification->addError(self::ERROR_USER_NOT_FOUND);
@@ -170,7 +170,7 @@ class TransferUseCase
      */
     private function validatePassword(User $user, string $password): void
     {
-        if (!$this->UserRepositoryInterface->checkUserCredentials($user->getEmail(), $password)) {
+        if (!$this->userRepositoryInterface->checkUserCredentials($user->getEmail(), $password)) {
             $this->notification->addError(self::ERROR_INVALID_CREDENTIALS);
         }
     }

@@ -3,20 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserListResource;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use Core\User\Application\DTO\InputCompanyDTO;
 use Core\User\Application\DTO\InputListUserDTO;
 use Core\User\Application\DTO\InputPeopleDTO;
 use Core\User\Application\DTO\InputUserDTO;
+use Core\User\Application\UseCase\CheckUserCredentialUseCase;
 use Core\User\Application\UseCase\CreateUserUseCase;
 use Core\User\Application\UseCase\ListUserUseCase;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    
+
     public function index(Request $request, ListUserUseCase $useCase)
     {
         $response = $useCase->execute(
@@ -42,6 +45,31 @@ class UserController extends Controller
             ]);
     }
 
+    public function login(UserLoginRequest $request, CheckUserCredentialUseCase $useCase)
+    {
+
+        $rs = $useCase->execute(
+            new InputUserDTO(
+                email: $request->email,
+                password: $request->password
+            )
+        );
+
+        if (!$rs) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if(!$user) {
+            return response()->json(['message' => 'An unexpected error has occurred. Please try again'], 500);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json(['token' => $token]);
+    }
+
     /**
      * Gravação de um novo usuário.
      *
@@ -65,7 +93,7 @@ class UserController extends Controller
                 cpf: $request->cpf,
                 phone: $request->phone
             ),
-            companyDTO:  $inputCompanyDTO
+            companyDTO: $inputCompanyDTO
         );
 
         $httpCode = $response->isSuccess() ? 201 : 400;

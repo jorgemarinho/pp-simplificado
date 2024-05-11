@@ -51,4 +51,5 @@ composer test:coverage
 
 
 **Core da aplicação está na pasta src**
+
 ![Src/Core](src_core.jpg)

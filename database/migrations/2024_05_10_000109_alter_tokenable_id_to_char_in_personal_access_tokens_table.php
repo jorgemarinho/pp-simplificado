@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('cnpj')->unique();
-            $table->uuid('people_id')->index();
-            $table->foreign('people_id')->references('id')->on('people');
-            $table->timestamps();
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->integer('tokenable_id')->change();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company');
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->integer('tokenable_id')->change();
+        });
     }
 };

@@ -7,6 +7,7 @@ use Core\User\Application\DTO\InputListUserDTO;
 use Core\User\Application\DTO\OutputListUserDTO;
 use Core\User\Domain\Repository\UserRepositoryInterface;
 
+
 class ListUserUseCase
 {
     public function __construct(private UserRepositoryInterface $userRepository)

@@ -3,6 +3,7 @@
 namespace Core\User\Application\UseCase;
 
 use Core\SeedWork\Application\UseCase\Interfaces\TransactionInterface;
+use Core\SeedWork\Domain\Enum\UserType;
 use Core\SeedWork\Domain\Notification\Notification;
 use Core\SeedWork\Domain\ValueObjects\Uuid;
 use Core\User\Application\DTO\InputCompanyDTO;
@@ -127,13 +128,16 @@ class CreateUserUseCase
 
             $user = $this->createUser($userDTO);
             $this->userRepository->insert($user);
-      
+    
             $people = $this->createPeople($peopleDTO, $user->id);
             $this->peopleRepository->insert($people);
 
             if (!is_null($companyDTO) && $companyDTO->cnpj != null) {
                 $company = $this->createCompany($companyDTO, $people->id);
                 $this->companyRepository->insert($company);
+
+                $user->setUserType(UserType::MERCHANT->value);
+                $this->userRepository->update($user);
             }
 
             $wallet = $this->createWallet($user->id);
@@ -144,7 +148,6 @@ class CreateUserUseCase
             return new OutputUserDTO(true, [self::MESSAGE_SUCCESS], $user, $people);
 
         } catch (\Exception $e) {
-
             $this->transaction->rollBack();
             $this->notification->addError($e->getMessage());
             $this->logger->error("CreateUserUseCase " . date('Y-m-d H:i:s') . " User ID: " . $user->id() . " Error: " . $e->getMessage());

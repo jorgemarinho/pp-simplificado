@@ -43,6 +43,12 @@ class User extends Entity
     {
         return $this->people;
     }
+
+    public function setUserType(int $userType): void
+    {
+        $this->userType = $userType;
+    }
+    
     public function toArray(): array
     {
         return [

@@ -39,7 +39,7 @@ class UserLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email:rfc,dns|unique:users,email',
+            'email' => 'required|email',
             'password' => 'required|min:8',
         ];
     }

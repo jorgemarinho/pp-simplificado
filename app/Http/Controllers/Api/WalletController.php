@@ -14,6 +14,52 @@ use Core\SeedWork\Domain\ValueObjects\Uuid as ValueObjectUuid;
 
 class WalletController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/wallets/add-credit",
+     *     summary="Adicionar credito para carteira",
+     *     tags={"Wallet"},
+     *     security={{"Bearer":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="user_id",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="amount",
+     *                 type="float"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Credit added successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/WalletResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function addCredit(AddCreditWalletRequest $request, AddCreditUseCase $addCreditUseCase)
     {
         $inputAddCreditWalletDTO = new InputAddCreditWalletDTO(
@@ -30,6 +76,56 @@ class WalletController extends Controller
             ->setStatusCode($httpCode);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/wallets/transfer",
+     *     summary="Realiza transferência entre carteiras",
+     *     tags={"Wallet"},
+     *     security={{"Bearer":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="payer_user_id",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="payee_user_id",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="value",
+     *                 type="float"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transfer successful",
+     *         @OA\JsonContent(ref="#/components/schemas/WalletResource")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function transfer(TransferWalletRequest $request, TransferUseCase $transferUseCase)
     {
         $inputTransferWalletDTO = new InputTransferWalletDTO(

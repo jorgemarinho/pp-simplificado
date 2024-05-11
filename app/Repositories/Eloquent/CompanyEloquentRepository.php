@@ -18,7 +18,7 @@ class CompanyEloquentRepository implements CompanyRepositoryInterface
         $dataDB = $this->model->create([
             'id' => $company->id(),
             'cnpj' => $company->getCnpj(),
-            'user_id' => $company->userId,
+            'people_id' => $company->peopleId,
         ]);
 
         return $this->convertToEntity($dataDB);
@@ -37,7 +37,7 @@ class CompanyEloquentRepository implements CompanyRepositoryInterface
     {
         return new Company(
             cnpj: $model->cnpj,
-            peopleId: $model->people->id,
+            peopleId:  new ValueObjectUuid( $model->people->id ),
             id: new ValueObjectUuid($model->id),
         );
     }

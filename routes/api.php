@@ -9,7 +9,7 @@ Route::get('/', function () {
 });
 
 Route::post('/users', [UserController::class, 'store']);
-Route::get('/login', [UserController::class, 'login'])->name('login');
+Route::post('/login', [UserController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('/users', UserController::class)->except('store');

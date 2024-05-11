@@ -30,8 +30,10 @@ class TransferUseCase
     public const ERROR_INVALID_CREDENTIALS = 'The provided email or password for the user is invalid';
     public const MESSAGE_SUCCESS = 'Transfer completed successfully!';
 
-    private const EXTERNAL_SERVICE_AUTHORIZE_TRANSFER_URL = 'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc';
-    private const EXTERNAL_SERVICE_SEND_TRANSFER_EVENT_URL = 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6';
+    //private const EXTERNAL_SERVICE_AUTHORIZE_TRANSFER_URL = 'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc';
+    private const EXTERNAL_SERVICE_AUTHORIZE_TRANSFER_URL = "https://run.mocky.io/v3/f3737791-a6d0-4cbd-acfd-c0934024d5c0";
+    //private const EXTERNAL_SERVICE_SEND_TRANSFER_EVENT_URL = 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6';
+    private const EXTERNAL_SERVICE_SEND_TRANSFER_EVENT_URL = "https://run.mocky.io/v3/5376d9af-6c62-4396-be9a-9c539dd0539d";
 
     private Notification $notification;
 

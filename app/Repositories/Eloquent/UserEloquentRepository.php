@@ -36,6 +36,19 @@ class UserEloquentRepository implements UserRepositoryInterface
         return $this->convertToEntity($dataDB);
     }
 
+    public function update(User $user): User
+    {
+        $dataDB = $this->model->find($user->id());
+
+        $dataDB->update([
+            'email' => $user->getEmail(),
+            'password' => $user->getPassword(),
+            'user_type_id' => $user->getType(),
+        ]);
+
+        return $this->convertToEntity($dataDB);
+    }
+
     public function findById(ValueObjectUuid $userId): User
     {
         if (!$dataDb = $this->model->find($userId)) {
@@ -56,7 +69,9 @@ class UserEloquentRepository implements UserRepositoryInterface
 
     public function checkUserCredentials(string $email, string $password): bool
     {
-        return $this->model->where('email', $email)->where('password', $this->passwordHasher->hashPassword($password))->exists();
+        $user = $this->model->where('email', $email)->first();
+
+        return  $this->passwordHasher->verifyPassword($password, $user->password);
     }
 
     public function paginate(string $filter = '', $order = 'DESC', int $page = 1, int $totalPage = 15): PaginationInterface
@@ -85,15 +100,21 @@ class UserEloquentRepository implements UserRepositoryInterface
         );
     }
 
-    private function convertToPeople(Model $model): People 
+    private function convertToPeople(Model $model): People|null 
     {
-        return new People(
-            fullName: $model->people->full_name,
-            cpf: $model->people->cpf,
-            phone: $model->people->phone,
-            userId: new ValueObjectUuid($model->id),
-            id: new ValueObjectUuid($model->people->id),
-            createdAt: $model->people->created_at
-        );
+        if ($model->people) {
+
+            return new People(
+                fullName: $model->people->full_name,
+                cpf: $model->people->cpf,
+                phone: $model->people->phone,
+                userId: new ValueObjectUuid($model->id),
+                id: new ValueObjectUuid($model->people->id),
+                createdAt: $model->people->created_at
+            );
+
+        }
+           
+        return null;
     }
 }

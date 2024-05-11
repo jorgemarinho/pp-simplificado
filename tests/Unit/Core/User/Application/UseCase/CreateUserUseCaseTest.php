@@ -22,6 +22,7 @@ it('can create a user client', function () {
     
     $userRepository = mock(UserRepositoryInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('insert')->once();
+        $mock->shouldReceive('update')->once();
         $mock->shouldReceive('findByEmail')->once();
     });
 

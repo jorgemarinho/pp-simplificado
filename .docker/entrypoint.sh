@@ -1,8 +1,8 @@
 #!/bin/bash
 
 chown -R www-data:www-data .
-composer install --optimize-autoloader --no-dev
+composer install
 php artisan key:generate
-#php artisan migrate
+php artisan migrate
 
 php-fpm

@@ -1,14 +1,16 @@
 ## Pp Simplificado
 
 
-Instalação Docker Engine (Docker Nativo) diretamente instalado no WSL2
+
+## Instruções
+
+Baixa o repositorio
 
 ```
-https://github.com/codeedu/wsl2-docker-quickstart#docker-engine-docker-nativo-diretamente-instalado-no-wsl2
-
+git clone https://github.com/jorgemarinho/pp-simplificado.git
 ```
 
-Subir o serviço docker
+Subir o serviço docker, caso não esteja iniciado
 
 ```
 service docker start
@@ -42,3 +44,11 @@ Test coverage %
 composer test:coverage
 
 ```
+
+## Arquitetura Clean Architecture ##
+
+![Clean Architecture](CleanArchitecture.jpg)
+
+
+Core da aplicação está na pasta src
+![Src/Core](src_core.jpg)

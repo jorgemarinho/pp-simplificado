@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('personal_access_tokens', function (Blueprint $table) {
-            $table->integer('tokenable_id')->change();
+            $table->uuid('tokenable_id')->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('personal_access_tokens', function (Blueprint $table) {
-            $table->integer('tokenable_id')->change();
+            $table->uuid('tokenable_id')->change();
         });
     }
 };

@@ -11,7 +11,9 @@ fi
 
 chown -R www-data:www-data .
 composer install
-php artisan key:generate
-php artisan migrate
+
+if [ "$1" = "--build" ]; then
+    php artisan migrate
+fi
 
 php-fpm

@@ -11,6 +11,7 @@ fi
 
 chown -R www-data:www-data .
 composer install
+php artisan key:generate
 
 if [ "$1" = "--build" ]; then
     php artisan migrate

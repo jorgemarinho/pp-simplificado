@@ -50,7 +50,7 @@ class AddCreditUseCase
             return new OutputAddCreditWalletDTO(true, [self::MESSAGE_SUCCESS], $inputAddCreditWalletDTO->getAmount());
         } catch (\Exception $e) {
             $this->transaction->rollBack();
-            $this->logger->error("AddCreditUseCase " . date('Y-m-d H:i:s') . " CPF : " . $inputAddCreditWalletDTO->getCpf() . " Error: " . $e->getMessage());
+            $this->logger->error("AddCreditUseCase " . date('Y-m-d H:i:s')  . " Error: " . $e->getMessage());
 
             return new OutputAddCreditWalletDTO(false, [self::MESSAGE_ERROR], $inputAddCreditWalletDTO->getAmount());
         }

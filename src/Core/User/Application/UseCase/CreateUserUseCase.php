@@ -19,7 +19,6 @@ use Core\User\Domain\Repository\UserRepositoryInterface;
 use Core\User\Services\PasswordHasher;
 use Core\Wallet\Domain\Entities\Wallet;
 use Core\Wallet\Domain\Repository\WalletRepositoryInterface;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Psr\Log\LoggerInterface;
 
 class CreateUserUseCase

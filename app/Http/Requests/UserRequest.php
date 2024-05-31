@@ -48,7 +48,7 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email:rfc,dns|unique:users,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'full_name' => 'required|min:6',
             'cpf' => 'required|min:11|cpf|unique:people,cpf',

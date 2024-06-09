@@ -37,11 +37,13 @@ class Wallet extends Entity
     public function deposit(float $value)
     {
         $this->balance += $value;
+        $this->validate();
     }
 
     public function withdraw(float $value)
     {
         $this->balance -= $value;
+        $this->validate();
     }
     
     public function toArray(): array

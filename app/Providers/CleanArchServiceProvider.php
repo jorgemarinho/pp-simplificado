@@ -46,6 +46,11 @@ class CleanArchServiceProvider extends ServiceProvider
             TransferEventManagerInterface::class,
             TransferMade::class
         );
+
+        $this->app->bind(
+            HttpServiceInterface::class,
+            HttpService::class
+        );
     }
 
 
@@ -74,11 +79,6 @@ class CleanArchServiceProvider extends ServiceProvider
         $this->app->bind(
             TransferHistoryRepositoryInterface::class,
             TransferHistoryEloquentRepository::class
-        );
-
-        $this->app->bind(
-            HttpServiceInterface::class,
-            HttpService::class
         );
     }
 }

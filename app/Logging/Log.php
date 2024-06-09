@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Logging;
-namespace App\Logging;
 
 use Monolog\Logger;
 
